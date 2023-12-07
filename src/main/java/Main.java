@@ -1,49 +1,117 @@
-import java.util.Arrays;
-import java.util.Map;
+import java.util.*;
 
 public class Main {
-    static Door [] doors = new Door[] {
-            new Door("1", false, false),
-            new Door("2", false, false),
-            new Door("3", false, false),
-    };
-    public static void main(String[] args) throws InterruptedException  {
-        //if someone hide a treasure behind random door
-        //what probability to find it at first try
-        firstChoice(doors[0], 1000);
-
-
+    static Random randomClass = new Random();
+    static Drawer drawer = new Drawer();
+    public static void main(String[] args) throws InterruptedException {
+        System.out.println("Guess at first try");
+        firstChoice(1, 10000);
+        System.out.println();
+        System.out.println("If you save choice");
+        saveChoice(1, 10000);
+        System.out.println();
+        System.out.println("If you change it");
+        changeChoice(1, 10000);
     }
-    public static void firstChoice(Door door, int iterations) throws InterruptedException{
+
+    //We have three doors in front of us
+    static List<Door> initList() {
+        List<Door> doors = new ArrayList<>();
+        doors.add(new Door(1, false, false));
+        doors.add(new Door(2, false, false));
+        doors.add(new Door(3, false, false));
+        return doors;
+    }
+    //Choose one of the three doors (int doorNumber)
+    public static void firstChoice(int doorNumber, int iterations) throws InterruptedException {
+        List<Door> doors = initList();
+
+        double marks = 0;
+        int percent = 0;
+        //Render the probability display
+        drawer.drawStart();
+
+        for (int i = 0; i <= iterations; i++) {
+            //Hide a prize behind a random door
+            Door chosen = setRandomAndChosen(doors, doorNumber);
+
+            //Remember if we guessed the right door
+            if (chosen.hasPrize) {
+                marks++;
+                percent = (int) ((marks / iterations) * 100);
+            }
+            //Obtain the probability of choosing the door with the prize on the first attempt
+            drawer.drawProgress(percent);
+
+            //Reset data for the next iteration
+            doors = initList();
+        }
+    }
+    //Do everything the same as before
+    public static void saveChoice(int doorNumber, int iterations) throws InterruptedException {
+        List<Door> doors = initList();
+
         double marks = 0;
         int percent = 0;
 
-        System.out.print("Calculating: [");
-        for (int i = 0; i < 100; i++) {
-            System.out.print(" ");
-        }
-        System.out.print("]\r");
+        drawer.drawStart();
 
         for (int i = 0; i <= iterations; i++) {
-            int random = (int)(Math.random() * 3);
-            doors[random].setRight(true);
-            System.out.print("Calculating: [");
+            Door chosen = setRandomAndChosen(doors, doorNumber);
 
-            if(door.isRight){
-                marks ++;
-                percent = (int)((marks / iterations) * 100);
-            }
-            for (int j = 0; j < percent; j++) {
-                System.out.print("*");
-            }
-            for (int j = percent; j < 100; j++) {
-                System.out.print(" ");
-            }
+            //But now remove the door behind which there is definitely no prize and which we did not choose
+            Door toRemove = doors.stream().filter(d -> !d.hasPrize && !d.isChosen).findFirst().orElseThrow(RuntimeException::new);
+            doors.remove(toRemove);
 
-            doors[random].setRight(false);
-            System.out.print("] " + percent + "%");
-            //Thread.sleep(80);
-            System.out.print("\r");
+            //Check the probability that there will be a prize behind the chosen door if we do not change the chosen door
+            if (chosen.hasPrize) {
+                marks++;
+                percent = (int) ((marks / iterations) * 100);
+            }
+            //Render the result
+            drawer.drawProgress(percent);
+
+            doors = initList();
         }
     }
+    //Do everything the same as before
+    public static void changeChoice(int doorNumber, int iterations) throws InterruptedException {
+        List<Door> doors = initList();
+
+        double marks = 0;
+        int percent = 0;
+
+        drawer.drawStart();
+
+        for (int i = 0; i <= iterations; i++) {
+            Door chosen = setRandomAndChosen(doors, doorNumber);
+
+            Door toRemove = doors.stream().filter(d -> !d.hasPrize && !d.isChosen).findFirst().orElseThrow(RuntimeException::new);
+            doors.remove(toRemove);
+
+            //But now change the choice after removing one non-prize door
+            chosen.setChosen(false);
+            chosen = doors.stream().filter(door -> door.name != doorNumber).findFirst().orElseThrow(RuntimeException::new);
+            chosen.setChosen(true);
+
+            if (chosen.hasPrize) {
+                marks++;
+                percent = (int) ((marks / iterations) * 100);
+            }
+
+            //Render the result
+            drawer.drawProgress(percent);
+
+            doors = initList();
+        }
+    }
+
+    public static Door setRandomAndChosen(List<Door> doors, int doorNumber){
+        int random = randomClass.nextInt(3);
+        doors.get(random).setHasPrize(true);
+        Door chosen = doors.stream().filter(door -> door.name == doorNumber).findFirst().orElseThrow(RuntimeException::new);
+        chosen.setChosen(true);
+        return chosen;
+    }
+
 }

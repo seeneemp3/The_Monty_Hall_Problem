@@ -1,37 +1,37 @@
 public class Door {
-    String name;
-    boolean isRight;
+    int name;
+    boolean hasPrize;
     boolean isChosen;
 
     @Override
     public String toString() {
         return "Door{" +
                 "name='" + name + '\'' +
-                ", isRight=" + isRight +
+                ", hasPrize=" + hasPrize +
                 ", isChosen=" + isChosen +
                 '}';
     }
 
-    public Door(String name, boolean isRight, boolean isChosen) {
+    public Door(int name, boolean hasPrize, boolean isChosen) {
         this.name = name;
-        this.isRight = isRight;
+        this.hasPrize = hasPrize;
         this.isChosen = isChosen;
     }
 
-    public String getName() {
+    public int getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(int name) {
         this.name = name;
     }
 
-    public boolean isRight() {
-        return isRight;
+    public boolean isHasPrize() {
+        return hasPrize;
     }
 
-    public void setRight(boolean right) {
-        isRight = right;
+    public void setHasPrize(boolean hasPrize) {
+        this.hasPrize = hasPrize;
     }
 
     public boolean isChosen() {
