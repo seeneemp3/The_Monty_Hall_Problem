@@ -17,9 +17,9 @@ public class Main {
     //We have three doors in front of us
     static List<Door> initList() {
         List<Door> doors = new ArrayList<>();
-        doors.add(new Door(1, false, false));
-        doors.add(new Door(2, false, false));
-        doors.add(new Door(3, false, false));
+        doors.add(new Door(1));
+        doors.add(new Door(2));
+        doors.add(new Door(3));
         return doors;
     }
     //Choose one of the three doors (int doorNumber)
@@ -91,7 +91,7 @@ public class Main {
 
             //But now change the choice after removing one non-prize door
             chosen.setChosen(false);
-            chosen = doors.stream().filter(door -> door.name != doorNumber).findFirst().orElseThrow(RuntimeException::new);
+            chosen = doors.stream().filter(door -> door.number != doorNumber).findFirst().orElseThrow(RuntimeException::new);
             chosen.setChosen(true);
 
             if (chosen.hasPrize) {
@@ -109,7 +109,7 @@ public class Main {
     public static Door setRandomAndChosen(List<Door> doors, int doorNumber){
         int random = randomClass.nextInt(3);
         doors.get(random).setHasPrize(true);
-        Door chosen = doors.stream().filter(door -> door.name == doorNumber).findFirst().orElseThrow(RuntimeException::new);
+        Door chosen = doors.stream().filter(door -> door.number == doorNumber).findFirst().orElseThrow(RuntimeException::new);
         chosen.setChosen(true);
         return chosen;
     }
