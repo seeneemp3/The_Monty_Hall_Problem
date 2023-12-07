@@ -5,3 +5,4 @@ The Monty Hall problem is a famous probability puzzle based on a game show scena
 
 I have visually implemented this problem in Java. 
 Here's how it looks
+![img_1.png](img_1.png)
